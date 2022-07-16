@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"pokerpc/config"
 	"pokerpc/proto"
 
 	"google.golang.org/grpc"
@@ -37,22 +38,16 @@ type Server interface {
 }
 
 type server struct {
-	config Config
+	config config.Config
 	proto.UnimplementedPokemonServiceServer
 }
 
-type Config struct {
-	Protocol string
-	Host     string
-	Port     string
-}
-
-func NewServer(c Config) Server {
+func NewServer(c config.Config) Server {
 	return &server{config: c}
 }
 
 func (s server) Serve() error {
-	addr := fmt.Sprintf("%s:%s", s.config.Host, s.config.Port)
+	addr := fmt.Sprintf("%s:%s", s.config.HostName, s.config.Port)
 	listener, err := net.Listen(s.config.Protocol, addr)
 	if err != nil {
 		return err

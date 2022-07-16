@@ -22,14 +22,8 @@ func main() {
 	}
 	client := proto.NewPokemonServiceClient(conn)
 	ctx := context.Background()
-	// here we can start using the client:
-	// w := &grpc.WishList{
-	// 	Name:   name,
-	// 	Status: grpc.WishList_ACTIVE,
-	// }
 	res, err := client.GetList(ctx, &proto.ListRequest{Limit: 20, Offset: 0})
 
-	// res, err := client.Create(ctx, &grpc.CreateWishListReq{WishList: w})
 	fmt.Println(res)
 	fmt.Println(err)
 }
