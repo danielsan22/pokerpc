@@ -4,7 +4,7 @@ import "github.com/kelseyhightower/envconfig"
 
 type Config struct {
 	//DBURL    string `envconfig:"DBURL" default:""`
-	HostName string `envconfig:"RENDER_EXTERNAL_HOSTNAME" defaul:""`
+	HostName string `envconfig:"HOST_NAME" defaul:""`
 	Port     string `envconfig:"PORT" defaul:""`
 	Protocol string `envconfig:"PROTOCOL" defaul:""`
 }
