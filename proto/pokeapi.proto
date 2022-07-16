@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package proto;
+option go_package = "./proto";
+
+message Pokemon {
+    int32 id = 1;
+    string name = 2;
+    bool is_default = 3;
+    int32 base_xp = 4;
+}
+
+message PokemonList {
+    repeated Pokemon pokemon = 1;
+    int32 offset = 2;
+    int32 limit = 3;
+}
+
+message ListRequest {
+    int32 offset = 1;
+    int32 limit = 2;
+}
+
+service PokemonService {
+    rpc GetList(ListRequest) returns (PokemonList);
+}
