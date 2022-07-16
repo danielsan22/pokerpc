@@ -15,7 +15,7 @@ type Client struct {
 }
 
 func main() {
-	addr := fmt.Sprintf("%s:%s", "127.0.0.1", "3333")
+	addr := fmt.Sprintf("%s:%s", "pokerpc-production.up.railway.app", "443")
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("impossible connect: %v", err)
@@ -23,7 +23,10 @@ func main() {
 	client := proto.NewPokemonServiceClient(conn)
 	ctx := context.Background()
 	res, err := client.GetList(ctx, &proto.ListRequest{Limit: 20, Offset: 0})
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(res)
+	}
 
-	fmt.Println(res)
-	fmt.Println(err)
 }
