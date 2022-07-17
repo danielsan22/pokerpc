@@ -76,7 +76,7 @@ func (s server) GetList(c context.Context, req *proto.ListRequest) (list *proto.
 	}
 
 	list.Pokemon = pkmList
-	return
+	return list, err
 }
 
 func (s server) fetch(limit, offset int32) PokemonPage {

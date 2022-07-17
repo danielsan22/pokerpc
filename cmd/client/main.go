@@ -15,8 +15,10 @@ type Client struct {
 }
 
 func main() {
-	addr := fmt.Sprintf("%s:%s", "pokerpc-production.up.railway.app", "443")
+	addr := fmt.Sprintf("%s:%s", "gorpc.onrender.com", "50051")
+
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	defer conn.Close()
 	if err != nil {
 		log.Fatalf("impossible connect: %v", err)
 	}
@@ -28,5 +30,4 @@ func main() {
 	} else {
 		fmt.Println(res)
 	}
-
 }
