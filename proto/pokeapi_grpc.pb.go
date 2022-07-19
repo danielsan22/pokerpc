@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PokemonServiceClient interface {
+	Hello(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Greeting, error)
 	GetList(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*PokemonList, error)
 }
 
@@ -31,6 +32,15 @@ type pokemonServiceClient struct {
 
 func NewPokemonServiceClient(cc grpc.ClientConnInterface) PokemonServiceClient {
 	return &pokemonServiceClient{cc}
+}
+
+func (c *pokemonServiceClient) Hello(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Greeting, error) {
+	out := new(Greeting)
+	err := c.cc.Invoke(ctx, "/proto.PokemonService/Hello", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *pokemonServiceClient) GetList(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*PokemonList, error) {
@@ -46,6 +56,7 @@ func (c *pokemonServiceClient) GetList(ctx context.Context, in *ListRequest, opt
 // All implementations must embed UnimplementedPokemonServiceServer
 // for forward compatibility
 type PokemonServiceServer interface {
+	Hello(context.Context, *Empty) (*Greeting, error)
 	GetList(context.Context, *ListRequest) (*PokemonList, error)
 	mustEmbedUnimplementedPokemonServiceServer()
 }
@@ -54,6 +65,9 @@ type PokemonServiceServer interface {
 type UnimplementedPokemonServiceServer struct {
 }
 
+func (UnimplementedPokemonServiceServer) Hello(context.Context, *Empty) (*Greeting, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Hello not implemented")
+}
 func (UnimplementedPokemonServiceServer) GetList(context.Context, *ListRequest) (*PokemonList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetList not implemented")
 }
@@ -68,6 +82,24 @@ type UnsafePokemonServiceServer interface {
 
 func RegisterPokemonServiceServer(s grpc.ServiceRegistrar, srv PokemonServiceServer) {
 	s.RegisterService(&PokemonService_ServiceDesc, srv)
+}
+
+func _PokemonService_Hello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PokemonServiceServer).Hello(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.PokemonService/Hello",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PokemonServiceServer).Hello(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _PokemonService_GetList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -95,6 +127,10 @@ var PokemonService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.PokemonService",
 	HandlerType: (*PokemonServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Hello",
+			Handler:    _PokemonService_Hello_Handler,
+		},
 		{
 			MethodName: "GetList",
 			Handler:    _PokemonService_GetList_Handler,

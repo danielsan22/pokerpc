@@ -12,6 +12,7 @@ import (
 	"pokerpc/proto"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 type PokemonItem struct {
@@ -47,7 +48,7 @@ func NewServer(c config.Config) Server {
 }
 
 func (s server) Serve() error {
-	addr := fmt.Sprintf("%s:%s", s.config.HostName, s.config.Port)
+	addr := fmt.Sprintf(":%s", s.config.Port)
 	listener, err := net.Listen(s.config.Protocol, addr)
 	if err != nil {
 		return err
@@ -55,11 +56,15 @@ func (s server) Serve() error {
 
 	srv := grpc.NewServer()
 	proto.RegisterPokemonServiceServer(srv, s)
-
+	reflection.Register(srv)
 	if err := srv.Serve(listener); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (s server) GetServerInfo() {
+
 }
 
 func (s server) GetList(c context.Context, req *proto.ListRequest) (list *proto.PokemonList, err error) {
@@ -77,6 +82,10 @@ func (s server) GetList(c context.Context, req *proto.ListRequest) (list *proto.
 
 	list.Pokemon = pkmList
 	return list, err
+}
+
+func (s server) Hello(ctx context.Context, in *proto.Empty) (*proto.Greeting, error) {
+	return &proto.Greeting{Message: "Hello World x2"}, nil
 }
 
 func (s server) fetch(limit, offset int32) PokemonPage {

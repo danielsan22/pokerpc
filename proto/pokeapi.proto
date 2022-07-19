@@ -3,6 +3,12 @@ syntax = "proto3";
 package proto;
 option go_package = "./proto";
 
+message Empty {}
+
+message Greeting {
+  string message = 1;
+}
+
 message Pokemon {
     int32 id = 1;
     string name = 2;
@@ -22,5 +28,6 @@ message ListRequest {
 }
 
 service PokemonService {
+    rpc Hello(Empty) returns (Greeting);
     rpc GetList(ListRequest) returns (PokemonList);
 }

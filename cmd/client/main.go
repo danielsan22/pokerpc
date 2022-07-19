@@ -15,7 +15,7 @@ type Client struct {
 }
 
 func main() {
-	addr := fmt.Sprintf("%s:%s", "gorpc.onrender.com", "50051")
+	addr := fmt.Sprintf("%s:%s", "throbbing-water-7344.fly.dev", "443")
 
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	defer conn.Close()

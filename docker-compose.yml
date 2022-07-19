@@ -1,0 +1,44 @@
+version: '3.9'
+services:
+  backend:
+    container_name: golang
+    environment:
+      - HOST_NAME=${HOST_NAME}
+      - PORT=${PORT}
+      - PROTOCOL=${PROTOCOL}
+      - GO111MODULE=${GO111MODULE}
+    tty: true
+    build: .
+    ports:
+      - 8000:${PORT}
+    restart: on-failure
+    # volumes:
+    #   - ./backend:/app
+    # Need to look into why the volumes make the whole thing don't run
+    # depends_on:
+    #   - postgresdb
+    networks:
+      - learning
+
+  # postgresdb:
+  #   image: postgres:12.10
+  #   container_name: postgres
+  #   environment:
+  #     - POSTGRES_USER=${DB_USER}
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD}
+  #     - POSTGRES_DB=${DB_NAME}
+  #     - DATABASE_HOST=${DB_HOST}
+  #   ports:
+  #     - '1234:5432'
+  #   volumes:
+  #     - ./pg_data:/var/lib/postgresql/data
+  #   networks:
+  #     - learning
+
+# volumes:
+#   pg_data:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  learning:
+    driver: bridge
