@@ -14,6 +14,8 @@ message Pokemon {
     string name = 2;
     bool is_default = 3;
     int32 base_xp = 4;
+    string sprite = 5;
+    string types = 6;
 }
 
 message PokemonList {

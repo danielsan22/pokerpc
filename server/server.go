@@ -25,6 +25,8 @@ type Pokemon struct {
 	Name      string `json:"name"`
 	BaseXP    int    `json:"base_experience"`
 	IsDefault bool   `json:"is_default"`
+	Sprite    string `json:"sprite"`
+	Types     string `json:"types"`
 }
 
 type PokemonPage struct {
@@ -69,14 +71,20 @@ func (s server) GetServerInfo() {
 
 func (s server) GetList(c context.Context, req *proto.ListRequest) (list *proto.PokemonList, err error) {
 	result := s.fetch(req.Limit, req.Offset)
+
+	pokemonList := <-fetchAll(result)
+
 	pkmList := make([]*proto.Pokemon, 0)
 	list = &proto.PokemonList{}
-	for _, v := range result.Results {
+
+	for _, v := range pokemonList {
 		pkmList = append(pkmList, &proto.Pokemon{
 			Id:        0,
 			Name:      v.Name,
 			IsDefault: false,
-			BaseXp:    10,
+			BaseXp:    int32(v.BaseXP),
+			Sprite:    v.Sprite,
+			Types:     v.Types,
 		})
 	}
 
@@ -89,7 +97,8 @@ func (s server) Hello(ctx context.Context, in *proto.Empty) (*proto.Greeting, er
 }
 
 func (s server) fetch(limit, offset int32) PokemonPage {
-	resp, err := http.Get("https://pokeapi.co/api/v2/pokemon")
+	url := fmt.Sprintf("https://pokeapi.co/api/v2/pokemon?limit=%d&offset=%d", limit, offset)
+	resp, err := http.Get(url)
 	if err != nil {
 		log.Default().Println("Can't fetch from pokeapi.co")
 	}
@@ -102,6 +111,5 @@ func (s server) fetch(limit, offset int32) PokemonPage {
 	if err != nil {
 		log.Default().Println(err)
 	}
-
 	return *list
 }
