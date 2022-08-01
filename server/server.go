@@ -79,7 +79,7 @@ func (s server) GetList(c context.Context, req *proto.ListRequest) (list *proto.
 
 	for _, v := range pokemonList {
 		pkmList = append(pkmList, &proto.Pokemon{
-			Id:        0,
+			Id:        int32(v.ID),
 			Name:      v.Name,
 			IsDefault: false,
 			BaseXp:    int32(v.BaseXP),
